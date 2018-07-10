@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=0.7, minimum-scale=0.6, maximum-scale=0.7, user-scalable=yes">
+	<title>用户注册 | <%=title%></title>
+	<meta name="description" content="<%=description%>">
+	<meta name="keywords" content="<%=keywords%>">
+	<link rel="shortcut icon" type="image/x-icon" sizes="32x32" href="img/favicon-32x32.png">
+	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.bootcss.com/MaterialDesign-Webfont/2.4.85/css/materialdesignicons.min.css">
+	<link rel="stylesheet" href="css/app.css">
+	<!-- Regx | Author: sc0utz | Create: 06/27/18 | https://github.com/sc0utz/regx -->
+</head>
+<body>
+	<div class="main">
+			<div id="lb" class="left-banner">
+				<div id="lb-logo" class="logo logo-absolute">
+					<a href="//<%=url%>" target="_Blank"><img src="img/logo.png"></img></a>
+				</div>
+			</div>
+			<div id="rw" class="right-wraper">
+				<ul id="top-nav" class="topnav" ondragstart="return false;" onselectstart="return false;">
+					<div id="topnav-logo" class="logo" style="display: none;">
+						<a href="//<%=url%>" target="_Blank"><img src="img/logo.png"></img></a>
+					</div>
+					<li><a id="cont-feedback" href="javascript:void(0);" data-toggle="modal" data-target="#content-window">意见反馈</a></li>
+					<li><a id="cont-annc" href="javascript:void(0);" data-toggle="modal" data-target="#content-window">通知公告</a></li>
+					<li><i class="mdi mdi-help-circle-outline"></i><a id="cont-help" href="javascript:void(0);"  data-toggle="modal" data-target="#content-window">使用帮助</a></li>
+				</ul>
+				<div id="rw-cb-0" class="center-box">
+					<h1><%=h1_title%></h1>
+					<h4><%=h4_title%></h4>
+					<form id="reg-form" class="form" autocomplete="off">
+						<div id="id-div" data-check="false">
+							<div class="input-icon"><i class="mdi mdi-checkbox-marked-circle-outline"></i></div>
+							<input name="id" type="text" placeholder="昵称" class="form-control input-success" maxlength="16">
+							<div id="id-error-tip" class="tip-title tip-error">
+								<span><i class="mdi mdi-alert-circle"></i><span></span></span>
+							</div>
+							<div id="id-tip" class="tip-title">
+							</div>
+						</div>	
+						<div id="pwd-div" data-check="false">
+							<div class="input-icon"><i class="mdi mdi-checkbox-marked-circle-outline"></i></div>
+							<input name="pwd" type="password" placeholder="密码" class="form-control" maxlength="16">
+							<div id="pwd-error-tip" class="tip-title tip-error">
+								<span><i class="mdi mdi-alert-circle"></i><span></span></span>
+							</div>
+							<div id="pwd-tip" class="tip-title">
+							</div>
+						</div>
+						<div id="e-div" data-check="false" style="display: inline-block; max-width: 270px;">
+							<div class="input-icon"><i class="mdi mdi-checkbox-marked-circle-outline"></i></div>
+							<input name="e" type="text" placeholder="邮箱" class="form-control e-input" maxlength="32">
+							<div id="e-error-tip" class="tip-title tip-error">
+								<span><i class="mdi mdi-alert-circle"></i><span></span></span>
+							</div>
+							<div id="e-tip" class="tip-title">
+							</div>
+						</div>
+						<div id="ecode-div" data-check="false" data-button="true" style="display: inline-block; float: right; margin-left: 15px;">
+							<div class="input-icon"><i class="mdi mdi-checkbox-marked-circle-outline"></i></div>
+							<div class="input-button"><a id="sendecode" data-appid="2020964756" href="javascript:void(0);">获取验证码</a></div>
+							<input name="ecode" type="text" placeholder="验证码" class="form-control ecode-input" maxlength="6">
+							<div id="ecode-error-tip" class="tip-title tip-error">
+								<span><i class="mdi mdi-alert-circle"></i><span></span></span>
+							</div>
+							<div id="ecode-tip" class="tip-title">
+							</div>
+						</div>
+						<button type="button" name="submit" data-appid="2014223378" class="btn btn-primary">立即注册</button>
+						<h5><input id="ag" type="checkbox" checked="checked" class="checkbox-inline"><span>我已阅读并同意<a id="cont-agreement" href="javascript:void(0);" data-toggle="modal" data-target="#content-window"><%=checkbox_ag%></a></span></h5>
+					</form>
+				</div>
+				<div id="rw-cb-1" class="center-box reg-res" style="display: none;">
+					<h1 id="reg-st-icon" class="reg-res-title">
+						<i class="mdi mdi-check-circle"></i>
+					</h1>
+					<h1 id="reg-st" class="reg-res-title reg-msg"></h1>
+					<h2 id="reg-id" class="reg-res-title reg-id"><span></span><a href="javascript:void(0);"><i class="mdi mdi-calendar-edit"></i></a></h2>
+					<span id="reg-tip" class="reg-res-title reg-tip">作弊、捣乱等违法行为都会被封号，请珍惜！</span>
+					<button type="button" name="return" onclick="location.reload();" class="btn btn-primary">返回首页</button>
+					<div class="reg-res-box">
+					</div>
+				</div>
+				<div class="modal fade" id="content-window" tabindex="-1" role="dialog" aria-labelledby="content-window" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="content-window-title"></h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body content-window">
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<footer class="footer">
+					<span><%=footer%></span>
+				</footer>
+			</div>
+	</div>
+	<div hidden>
+		<input name="session-code" type="text" value="<%=session_code%>">
+	</div>
+	<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+	<script src="js/app.js"></script>
+</body>
+</html>
