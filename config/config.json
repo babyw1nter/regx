@@ -1,0 +1,111 @@
+{
+
+"website": {
+	"title": "我的世界服务器",
+	"url": "minecraft.net",
+	"description": "Minecraft 是一款堆方块、不断冒险的游戏。在此注册,或浏览网站了解最新消息和社区的精彩创意!",
+	"keywords": "我的世界, 注册我的世界, 我的世界pc版, 我的世界mac版, 我的世界iphone版, 我的世界安卓版, 我的世界android版, 我的世界xboxone版, 我的世界ps4版, 我的世界电脑版",
+	"h1_title": "欢迎你的到来",
+	"h4_title": "快乐风车，基情相伴",
+	"checkbox_ag": "《我的世界服务器用户服务条款》",
+	"footer": "© 2018 Minecraft 京ICP备18012345号-1"
+},
+
+"server": {
+	"host": "127.0.0.1",
+	"port": 1234
+},
+
+"mysql": {
+	"host": "localhost",
+	"port": 3306,
+	"user": "root",
+	"password": "root",
+	"dbname": "regx",
+	"users": {
+		"tablename": "regx_users",
+		"prefix": "",
+		"encrypt": "SHA256",
+		"column": {
+			
+		}
+	},
+	"authme": {
+		"tablename": "authme",
+		"prefix": "",
+		"world": "world",
+		"encrypt": "SHA256",
+		"column": {
+			"mySQLColumnId": "id",
+			"mySQLColumnName": "username",
+			"mySQLRealName": "realname",
+			"mySQLColumnPassword": "password",
+			"mySQLColumnEmail": "email",
+			"mySQLColumnLogged": "isLogged",
+			"mySQLColumnHasSession": "hasSession",
+			"mySQLColumnIp": "ip",
+			"mySQLColumnLastLogin": "lastlogin",
+			"mySQLColumnRegisterDate": "regdate",
+			"mySQLColumnRegisterIp": "regip",
+			"mySQLlastlocX": "x",
+			"mySQLlastlocY": "y",
+			"mySQLlastlocZ": "z",
+			"mySQLlastlocWorld": "world",
+			"mySQLlastlocYaw": "yaw",
+			"mySQLlastlocPitch": "pitch"
+		}
+	}
+},
+
+"verify": {
+	"sendecode": {
+		"AppID": "",
+		"AppSecretKey": ""
+	},
+	"reg": {
+		"AppID": "",
+		"AppSecretKey": ""
+	}
+},
+
+"email": {
+	"smtp": {
+		"host": "127.0.0.1",
+		"port": 443
+	},
+	"ecode": {
+		"timeout": 300,
+		"timecount": 0
+	}
+},
+
+"errMsg": {
+	"id": {
+		"check": "您不能使用该昵称",
+		"exist": "该昵称已存在，您不能使用该昵称",
+		"disabled": "该昵称已被禁用，您不能使用该昵称",
+		"regex": "昵称格式不正确"
+	},
+	"e": {
+		"check": "您不能使用该邮箱",
+		"exist": "该邮箱已被注册",
+		"disabled": "该邮箱已被禁用",
+		"regex": "邮箱格式不正确"
+	},
+	"ecode": {
+		"check": "验证码不正确",
+		"regex": "验证码格式不正确"
+	},
+	"ip": {
+		"regex": "IP地址格式不正确",
+		"fast": "您的IP地址在短时间内不能注册！"
+	},
+	"reg": {
+		"success": "作弊、捣乱等违法行为将会被封禁，请珍惜！",
+		"error": "错误代码: 500 注册失败，请联系管理员！",
+		"fast": "您的IP地址在短时间内不能注册！"
+	},
+	"default": "参数错误"
+}
+
+}
