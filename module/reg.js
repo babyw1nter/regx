@@ -3,6 +3,7 @@ const index = require("./index.js");
 const sql = require("./sql.js");
 const api = require("./api.js");
 const check = require("./check.js");
+
 var config = require("../config/config.json");
 
 exports.register = async (JSONdata, ip) => { // 注册处理主入口
@@ -23,6 +24,7 @@ exports.register = async (JSONdata, ip) => { // 注册处理主入口
 		if(regstatus){ // 插入成功
 			msg.msg = "OK";
 			msg.status = "true";
+			console.log("新用户注册成功:", JSONdata.id, JSONdata.e, ip);
 		} else { // 插入失败
 			msg.msg = config.errMsg.reg.error;
 			msg.status = "false";

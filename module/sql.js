@@ -2,6 +2,7 @@
 const mysql_ = require("mysql");
 const promise = require("promise");
 const api = require("./api.js");
+
 var config = require("../config/config.json");
 
 var mysql_pool = mysql_.createPool({
@@ -10,14 +11,9 @@ var mysql_pool = mysql_.createPool({
 	user: config.mysql.user,
 	password: config.mysql.password,
 	database: config.mysql.dbname,
-	connectTimeout: 5000
+	connectTimeout: 5000,
+	dateStrings: true  // date转字符串
 });
-
-var res = [];
-
-exports.connect = () => {
-	//TUDO...
-}
 
 exports.tableExistThenCreateTable = async (tablename) => {
 	mysql_pool.getConnection((err, connection) => {
@@ -26,7 +22,7 @@ exports.tableExistThenCreateTable = async (tablename) => {
 			if(err){
 				console.log("检测到数据表不存在, 正在创建中...");
 				let ct = await this.createTable(tablename);
-				if(ct) console.log("数据表创建完成!");
+				if(ct) console.log("数据表创建完成!"); else console.log("数据表创建失败!");
 			}
 		});
 	});
@@ -39,30 +35,6 @@ exports.createTable = async (tablename) => { // 建表，TUDO...
 };
 
 exports.queryExist = async (key, val) => { // 查询是否已存在
-	/*
-	mysql_pool.getConnection((err, connection) => {
-		if (err) throw err;
-		let errmod = "exist";
-  		let sql1 = "SELECT * FROM `" + config.mysql.users.tablename + "` WHERE " + key + " = '" + val + "' LIMIT 1;",
-  			sql2 = "SELECT * FROM `" + config.mysql.authme.tablename + "` WHERE " + key + " = '" + val + "' LIMIT 1;";
-  		connection.query(sql1, (err, result) => { // 查users表 回调地狱写法
-  			if (err) throw err;
-  			let errmod = "exist";
-  			if(result.length == 0 && err == null){
-  				connection.query(sql2, (err_, result_) => { // 查authme表
-  					if (err) throw err;
-  					if(result_.length == 0 && err_ == null){
-  						checkreturn.CheckStatus = "true";
-  					}
-  					callback(res, checkreturn, errmod);
-  				});
-  			} else {
-  				callback(res, checkreturn, errmod);
-  			}
-  		});
-  		connection.release();
-	});
-	*/
 	let status = [false, false];
 	let sql_users = "SELECT * FROM `" + config.mysql.users.tablename + "` WHERE " + key + " = '" + val + "' LIMIT 1;",
 		sql_authme = "SELECT * FROM `" + config.mysql.authme.tablename + "` WHERE " + key + " = '" + val + "' LIMIT 1;";
@@ -80,7 +52,6 @@ exports.queryExist = async (key, val) => { // 查询是否已存在
 		});
 	});
 	await query_users.then((onFulfilled, onRejected) => {
-		//console.log(onFulfilled, onRejected);
 		if(onFulfilled.length == 0){
 			status[0] = true;
 		} else {
@@ -101,7 +72,6 @@ exports.queryExist = async (key, val) => { // 查询是否已存在
 		});
 	});
 	await query_authme.then((onFulfilled, onRejected) => {
-		//console.log(onFulfilled, onRejected);
 		if(onFulfilled.length == 0){
 			status[1] = true;
 		} else {
@@ -114,115 +84,86 @@ exports.queryExist = async (key, val) => { // 查询是否已存在
 	return true;
 };
 
-exports.queryReg = async (JSONdata) => { // 这里用户名和邮箱要两个表都查，回调地狱写法太深了，用了 async/await Promise 重构
+exports.queryUsernameAndEmail = async (JSONdata) => { // 这里用户名和邮箱要两个表都查，回调地狱写法太深了，用了 async/await Promise 重构
 	let username = JSONdata.id,
 		email = JSONdata.e;
 	let status = [false, false, false, false];
-	let sql_username = "SELECT * FROM `" + config.mysql.users.tablename + "` WHERE username = '" + JSONdata.id + "' LIMIT 1;",
-		sql_email = "SELECT * FROM `" + config.mysql.users.tablename + "` WHERE email = '" + JSONdata.e + "' LIMIT 1;",
-		sql_username_authme = "SELECT * FROM `" + config.mysql.authme.tablename + "` WHERE username = '" + JSONdata.id + "' LIMIT 1;",
-		sql_email_authme = "SELECT * FROM `" + config.mysql.authme.tablename + "` WHERE email = '" + JSONdata.e + "' LIMIT 1;";
-	let query_un = new Promise((resolve, reject) => {
-		mysql_pool.getConnection((error, connection) => {
-			if (error) throw error;
-			connection.query(sql_username, (err, res) => {
-				if(err){
-					reject(err);
-				} else {
-					resolve(res);
-				}
-				connection.release();
-			});
-		});
-	});
-	await query_un.then((onFulfilled, onRejected) => {
-		//console.log(onFulfilled, onRejected);
-		if(onFulfilled.length == 0){
-			status[0] = true;
-		} else {
-			status[0] = false;
-		}
-	});
-	let query_em = new Promise((resolve, reject) => {
-		mysql_pool.getConnection((error, connection) => {
-			if (error) throw error;
-			connection.query(sql_email, (err, res) => {
-				if(err){
-					reject(err);
-				} else {
-					resolve(res);
-				}
-				connection.release();
-			});
-		});
-	});
-	await query_em.then((onFulfilled, onRejected) => {
-		//console.log(onFulfilled, onRejected);
-		if(onFulfilled.length == 0){
-			status[1] = true;
-		} else {
-			status[1] = false;
-		}
-	});
-	let query_un_ae = new Promise((resolve, reject) => {
-		mysql_pool.getConnection((error, connection) => {
-			if (error) throw error;
-			connection.query(sql_username_authme, (err, res) => {
-				if(err){
-					reject(err);
-				} else {
-					resolve(res);
-				}
-				connection.release();
-			});
-		});
-	});
-	await query_un_ae.then((onFulfilled, onRejected) => {
-		//console.log(onFulfilled, onRejected);
-		if(onFulfilled.length == 0){
-			status[2] = true;
-		} else {
-			status[2] = false;
-		}
-	});
-	let query_em_ae = new Promise((resolve, reject) => {
-		mysql_pool.getConnection((error, connection) => {
-			if (error) throw error;
-			connection.query(sql_email_authme, (err, res) => {
-				if(err){
-					reject(err);
-				} else {
-					resolve(res);
-				}
-				connection.release();
-			});
-		});
-	});
-	await query_em_ae.then((onFulfilled, onRejected) => {
-		//console.log(onFulfilled, onRejected);
-		if(onFulfilled.length == 0){
-			status[3] = true;
-		} else {
-			status[3] = false;
-		}
-	});
-	//console.log("query:",status);
-	if(status.indexOf(false) != -1){
-		return false;
+	let username_status = await this.queryExist("username", username),
+		email_status = await this.queryExist("email", email);
+	if(username_status && email_status){
+		return true;
 	}
-	return true;
+	return false;
 };
 
-exports.queryTime = async (ip, time_count) => {
-	console.log("IP检测:", ip, time_count);
-	return true;
+exports.queryTime = async (ip, time_count) => { // 查询同ip注册时间
+	let nowTime = parseInt(api.getTimeStamp() / 1000) * 1000, // 精确到秒就可以了
+		sqlTime_users = new Number(),
+		sqlTime_authme = new Number(),
+		countTime = time_count * 60 * 1000;
+	let status = [false, false];
+	let sql_ip_users = "SELECT `id`, `date`, `ip` FROM `" + config.mysql.users.tablename + "` WHERE `ip` = '" + ip + "' ORDER BY `id` DESC LIMIT 1;",
+		sql_ip_authme = "SELECT `id`, `regdate`, `regip` FROM `" + config.mysql.authme.tablename + "` WHERE `regip` = '" + ip + "' ORDER BY `id` DESC LIMIT 1;";
+	let query_ip_users = new Promise((resolve, reject) => {
+		mysql_pool.getConnection((error, connection) => {
+			if (error) throw error;
+			connection.query(sql_ip_users, (err, res) => {
+				if(err){
+					reject(err);
+				} else {
+					resolve(res);
+				}
+				connection.release();
+			});
+		});
+	});
+	await query_ip_users.then((onFulfilled, onRejected) => {
+		if(onFulfilled.length !== 0){
+			let data = JSON.parse(JSON.stringify(onFulfilled))[0];
+			sqlTime_users = api.getTimeStamp(data[config.mysql.users.column.mySQLColumnRegisterDate]);
+		} else {
+			status[0] = true;
+		}
+	});
+	let query_ip_authme = new Promise((resolve, reject) => {
+		mysql_pool.getConnection((error, connection) => {
+			if (error) throw error;
+			connection.query(sql_ip_authme, (err, res) => {
+				if(err){
+					reject(err);
+				} else {
+					resolve(res);
+				}
+				connection.release();
+			});
+		});
+	});
+	await query_ip_authme.then((onFulfilled, onRejected) => {
+		if(onFulfilled.length !== 0){
+			let data = JSON.parse(JSON.stringify(onFulfilled))[0];
+			sqlTime_authme = parseInt(data[config.mysql.authme.column.mySQLColumnRegisterDate] / 1000) * 1000;
+		} else {
+			status[1] = true;
+		}
+	});
+	if(status.indexOf(false) == -1){
+		return true;
+	}
+	if((sqlTime_users + countTime) >= nowTime || (sqlTime_authme + countTime) >= nowTime){
+		return false;
+	} else {
+		return true;
+	}
+	return false;
 };
 
 exports.insertReg = async (JSONdata, ip) => { // 插入数据表
 	let status = [false, false];
 	let username = JSONdata.id.toLowerCase(),
 		realname = JSONdata.id,
-		password = JSONdata.pwd, password_users = api.encrypt(password, config.mysql.users.encrypt), password_authme = api.encrypt(password, config.mysql.authme.encrypt),
+		password = JSONdata.pwd,
+		password_users = api.encrypt(password, config.mysql.users.saltlen, config.mysql.users.encrypt),
+		password_authme = api.encrypt(password, config.mysql.authme.saltlen, config.mysql.authme.encrypt),
 		email = JSONdata.e,
 		date_timestamp = api.getTimeStamp(),
 		date = api.timestamp2Date(date_timestamp);
@@ -242,7 +183,6 @@ exports.insertReg = async (JSONdata, ip) => { // 插入数据表
 		});
 	});
 	await query_users.then((onFulfilled, onRejected) => {
-		//console.log(onFulfilled, onRejected);
 		if(onFulfilled.length !== 0){
 			status[0] = true;
 		} else {
@@ -263,7 +203,6 @@ exports.insertReg = async (JSONdata, ip) => { // 插入数据表
 		});
 	});
 	await query_authme.then((onFulfilled, onRejected) => {
-		//console.log(onFulfilled, onRejected);
 		if(onFulfilled.length !== 0){
 			status[1] = true;
 		} else {
@@ -275,4 +214,3 @@ exports.insertReg = async (JSONdata, ip) => { // 插入数据表
 	}
 	return true;
 }
-

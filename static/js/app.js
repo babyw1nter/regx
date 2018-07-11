@@ -381,7 +381,7 @@ var verify_sendecode = new TencentCaptcha("2020964756", function(res){ // ajaxå
 			bizstate: res.bizState
         }
         ajaxObj.ajaxSendecode(formData);
-        sendecode(5, $("a#sendecode"));
+        sendecode(90, $("a#sendecode"));
     }
 }, { bizState: "sendecode" });
 

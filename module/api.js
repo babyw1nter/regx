@@ -1,8 +1,12 @@
 "use strict";
 const crypto = require("crypto");
+const https = require("https");
+const http = require("http");
+const promise = require("promise");
+
 var config = require("../config/config.json");
 
-exports.getReqIp = (req) => {
+exports.getReqIp = (req) => { // 取客户端IP地址
     let ip = req.headers["x-real-ip"] || req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";
 	if(ip.split(",").length > 0){
 		ip = ip.split(",")[0];
@@ -10,13 +14,13 @@ exports.getReqIp = (req) => {
 	return ip;
 };
 
-exports.getRandomNum = (min, max) => {
+exports.getRandomNum = (min, max) => { // 取随机数
 	let range = max - min;   
 	let rand = Math.random();
 	return (min + Math.round(rand * range));
 };
 
-exports.getRandomStr = (len, ci = false) => {
+exports.getRandomStr = (len, ci = false) => { // 取随机HEX字符串
 	let strArr = new Array();
 	strArr = ["a", "b", "c", "d", "e", "f", "A", "B", "C", "D", "E", "F", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 	strArr.sort(() => { return 0.5 - Math.random() });
@@ -29,15 +33,15 @@ exports.getRandomStr = (len, ci = false) => {
 	return str;
 }
 
-exports.getTimeStamp = () => {
-	return new Date().getTime();
+exports.getTimeStamp = (date) => { // 取13位时间戳
+	if(date) return new Date(date).getTime(); else return new Date().getTime();
 };
 
-exports.timestamp2Date = (timestamp) => {
+exports.timestamp2Date = (timestamp) => { // 时间戳转日期 yyyy-mm-dd hh:mm:ss
 	let Date_ = new Date(timestamp);
 	let Y = Date_.getFullYear();
 	let M = Date_.getMonth() + 1;
-		M = M < 10 ? '0' + M : M;// 不够两位补充0
+		M = M < 10 ? '0' + M : M;
 	let D = Date_.getDate();
 		D = D < 10 ? '0' + D : D;
 	let H = Date_.getHours();
@@ -49,8 +53,33 @@ exports.timestamp2Date = (timestamp) => {
 	return Y + '-' + M + '-' + D + ' ' + H + ':' + Mi + ':' + S;
 };
 
-exports.encrypt = (str, ea) => {
-	let encrypt_ = new encrypt(8);
+exports.get = async (hostname, path, port) => { // get请求 https 尚未完成
+	let opt = {
+		hostname: hostname,
+		port: port,
+		path: path + "?" + querystring.stringify(data),
+
+	}
+	let return_data = "";
+	let gets = new Promise((resolve, reject) => {
+		https.get(opt, (req) => {
+			req.on("data", (res) => {
+				return_data += res;
+			});
+			req.on("end", (res) => {
+				resolve(return_data); // JSON.parse()
+			});
+		});
+	});
+	await query_users.then((onFulfilled, onRejected) => {
+		if(onFulfilled.length > 0){
+			return onFulfilled;
+		}
+	});
+}
+
+exports.encrypt = (str, saltlen = 8, ea) => { // 处理加密算法
+	let encrypt_ = new encrypt(saltlen);
 	switch (ea) {
 		case "MD5":
 			return encrypt_.MD5(str);
@@ -77,7 +106,7 @@ exports.encrypt = (str, ea) => {
 	}
 };
 
-class encrypt {
+class encrypt { // 加密算法类
 	constructor(saltlen){
 		this.saltlen = saltlen * 2;
 	}

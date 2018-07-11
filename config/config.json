@@ -16,6 +16,27 @@
 	"port": 1234
 },
 
+"system": {
+	"reg": {
+		"interval": 480,
+		"email": {
+			"mode": "blacklist",
+			"whitelist": "qq.com, sina.com, 163.com, 126.com, 189.com",
+			"blacklist": "gmail.com, hotmail.com"
+		},
+		"ip": {
+			"mode": "blacklist",
+			"whitelist": "",
+			"blacklist": "113.43.52.*, 69.*.*.*"
+		},
+		"city": {
+			"mode": "blacklist",
+			"whitelist": "中国",
+			"blacklist": ""
+		}
+	}
+},
+
 "mysql": {
 	"host": "localhost",
 	"port": 3306,
@@ -26,8 +47,16 @@
 		"tablename": "regx_users",
 		"prefix": "",
 		"encrypt": "SHA256",
+		"saltlen": 8,
 		"column": {
-			
+			"mySQLColumnId": "id",
+			"mySQLColumnName": "username",
+			"mySQLRealName": "realname",
+			"mySQLColumnPassword": "password",
+			"mySQLColumnEmail": "email",
+			"mySQLColumnInviteCode": "invite_code",
+			"mySQLColumnRegisterDate": "date",
+			"mySQLColumnRegisterIp": "ip"		
 		}
 	},
 	"authme": {
@@ -35,6 +64,7 @@
 		"prefix": "",
 		"world": "world",
 		"encrypt": "SHA256",
+		"saltlen": 8,
 		"column": {
 			"mySQLColumnId": "id",
 			"mySQLColumnName": "username",
@@ -70,8 +100,16 @@
 
 "email": {
 	"smtp": {
-		"host": "127.0.0.1",
-		"port": 443
+		"host": "smtp.exmail.qq.com",
+		"port": 443,
+		"sercure": true,
+		"username": "10000@qq.com",
+		"password": "123456",
+		"nick": "我的世界服务器",
+		"from": "10000@qq.com",
+		"title": "请验证您的邮箱",
+		"servername": "我的世界服务器",
+		"description": "《我的世界服务器》是一个追求温馨和谐、纯净玩法的正版服务器，旨在为玩家打造一个舒适的游戏环境，欢迎您的加入！"
 	},
 	"ecode": {
 		"timeout": 300,

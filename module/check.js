@@ -2,10 +2,14 @@
 const index = require("./index.js");
 const sql = require("./sql.js");
 const api = require("./api.js");
-const mailer = require("nodemailer");
+const nodemailer = require("nodemailer");
 const https = require("https");
+const promise = require("promise");
 const querystring = require("querystring");
 const schedule = require("node-schedule");
+const path = require("path");
+const fs = require("fs");
+
 var config = require("../config/config.json");
 
 var regex = new Array();
@@ -37,11 +41,11 @@ exports.inputCheck = async (JSONdata, res) => { // 已用 Promise async/await �
 	let InputVal = JSONdata.InputVal.toLowerCase(); // 转小写判断
 	let BizState = JSONdata.BizState;
 	let regexMsg = this.regexCheck(JSONdata);
-	if(typeof(regexMsg) !== "undefined"){ // 所有提交上来的请求都先进行正则判断，通过后再进行数据库查询
+	if(regexMsg){ // 所有提交上来的请求都先进行正则判断，通过后再进行数据库查询
 		checkReturn.Message = regexMsg;
 		return checkReturn;
 	} else {
-		if(typeof(InputNameReplace[InputName]) != "undefined"){ // 上面有个替换数组, 规定了哪些要经过数据库查询
+		if(InputNameReplace[InputName]){ // 上面有个替换数组, 规定了哪些要经过数据库查询
 			let checkstatus = await sql.queryExist(InputName.replace(InputName, InputNameReplace[InputName]), InputVal);
 			if(!checkstatus){ // 已存在返回false
 				checkReturn.CheckStatus = "false";
@@ -81,19 +85,6 @@ exports.regexCheck = (JSONdata) => { // 正则判断 待重构 TUDO...
 	}
 };
 
-// function checkCallback(res, checkreturn, errmod){ // 异步回调事件，搞死老子的同步查询根本搞不来，放弃了
-// 	if(checkreturn.CheckStatus == "false" || !checkreturn.CheckStatus){
-// 		if(typeof(config.errMsg[checkreturn.InputName]) != "undefined"){
-// 			if(checkreturn.Message == "null"){
-// 				checkreturn.Message = config.errMsg[checkreturn.InputName][errmod];
-// 			}
-// 		} else {
-// 			checkreturn.Message = "参数错误";
-// 		}
-// 	}
-// 	res.send(checkreturn);
-// };
-
 exports.regCheck = async (JSONdata, ip) => { // 注册验证
 	for(let i in JSONdata){ // 遍历正则
 		if(regex[i]){
@@ -107,19 +98,18 @@ exports.regCheck = async (JSONdata, ip) => { // 注册验证
 	if(!this.ecodeQuery(JSONdata.e, JSONdata.ecode)){ // 邮箱验证码
 		return config.errMsg.ecode.check;
 	}
-	let sql_exist_status = await sql.queryReg(JSONdata);
+	let sql_exist_status = await sql.queryUsernameAndEmail(JSONdata);
 	if(!sql_exist_status){ // 数据库查询重复
 		return config.errMsg.id.exist;
 	}
-	let sql_time_status = await sql.queryTime(ip, 8); // TUDO...
-	if(!sql_time_status){ // 判断注册间隔时间
+	let sql_time_status = await sql.queryTime(ip, config.system.reg.interval);
+	if(!sql_time_status){ // 判断注册间隔时间 单位：分钟
 		return config.errMsg.reg.fast;
 	}
 	return true;
 };
 
 exports.verifyCheck = async (Aid, AppSecretKey, Ticket, Randstr, UserIP, Res, callback) => { // get提交人机验证 TUDO...
-	UserIP = "116.8.52.96";
 	let data = {
 		"aid": Aid,
 		"AppSecretKey": AppSecretKey,
@@ -148,12 +138,44 @@ exports.verifyCheck = async (Aid, AppSecretKey, Ticket, Randstr, UserIP, Res, ca
 	}
 };
 
-exports.sendecode = (JSONdata) => { // 发送邮箱验证码
-	console.log(this.ecodeAdd(JSONdata.e));
+exports.sendecode = async (JSONdata) => { // 发送邮箱验证码
+	let ecode = this.ecodeAdd(JSONdata.e);
+	let time = api.timestamp2Date(api.getTimeStamp());
+	let transporter = nodemailer.createTransport({
+		host: config.email.smtp.host,
+		port: config.email.port,
+		sercure: config.email.smtp.sercure,
+        auth: {
+            user: config.email.smtp.username,
+            pass: config.email.smtp.password
+        }
+	});
+	let email_html = fs.readFileSync(path.resolve(__dirname, "..") + "/static/cont/email.html").toString().replace(/{ecode}/g, ecode.ecode).replace(/{servername}/g, config.email.smtp.servername).replace(/{description}/g, config.email.smtp.description).replace(/{timeout}/g, config.email.ecode.timeout / 60).replace(/{time}/g, time);
+	let email = {
+        from: '"' + config.email.smtp.nick + '" <' + config.email.smtp.from + '>',
+        to: JSONdata.e,
+        subject: config.email.smtp.title,
+        text: "",
+        html: email_html
+	};
+	let mailer = new Promise((resolve, reject) => {
+		transporter.sendMail(email, (error, info) => {
+			if(error){
+				reject(error);
+			} else {
+				resolve(info);
+			}
+		});
+	});
+	await mailer.then((onFulfilled, onRejected) => {
+		if(onRejected){
+			return false;
+		}
+	});
 	return true;
 };
 
-exports.ecodeAdd = (email) => {
+exports.ecodeAdd = (email) => { // 添加验证码到容器
 		let ecode = api.getRandomNum(100000, 999999);
 		let deadline = api.getTimeStamp() + parseInt(config.email.ecode.timeout) * 1000;
 		__ecode[email] = { "ecode": ecode, "deadline": deadline };
