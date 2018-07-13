@@ -26,12 +26,32 @@ var InputNameReplace = {
 
 var __ecode = new Array();
 
-exports.tableCheck = () => { // 检测数据表是否存在, 不存在则创建表 TUDO...
-	sql.tableExistThenCreateTable(config.mysql.users.tablename);
-	sql.tableExistThenCreateTable(config.mysql.authme.tablename);
+exports.tableCheck = async () => { // 检测数据表是否存在, 不存在则创建表
+	let sql_users = "CREATE TABLE `" + config.mysql.users.tablename + "` (`id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT, `username` varchar(255) NOT NULL, `realname` varchar(255) NOT NULL, `password` varchar(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL, `email` varchar(255) NOT NULL, `invite_code` varchar(255) DEFAULT NULL, `date` datetime NOT NULL, `ip` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`), KEY `username` (`username`)) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+		sql_authme = "CREATE TABLE `" + config.mysql.authme.tablename + "` (`id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT, `username` varchar(255) NOT NULL, `realname` varchar(255) NOT NULL, `password` varchar(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL, `ip` varchar(40) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL, `lastlogin` bigint(20) DEFAULT NULL, `x` double NOT NULL DEFAULT '0', `y` double NOT NULL DEFAULT '0', `z` double NOT NULL DEFAULT '0', `world` varchar(255) NOT NULL DEFAULT 'world', `regdate` bigint(20) NOT NULL DEFAULT '0', `regip` varchar(40) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL, `yaw` float DEFAULT NULL, `pitch` float DEFAULT NULL, `email` varchar(255) DEFAULT NULL, `isLogged` smallint(6) NOT NULL DEFAULT '0', `hasSession` smallint(6) NOT NULL DEFAULT '0', PRIMARY KEY (`id`), UNIQUE KEY `username` (`username`)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+	let usersExist = await sql.tableExist(config.mysql.users.tablename),
+		authmeExist = await sql.tableExist(config.mysql.authme.tablename);
+	if(!usersExist){
+		console.log("数据表 '" + config.mysql.users.tablename + "' 不存在，正在创建中...");
+		let c = await sql.createTable(config.mysql.users.tablename, sql_users);
+		if(c){
+			console.log("数据表 '" + config.mysql.users.tablename + "' 创建成功！");
+		} else {
+			console.log("数据表 '" + config.mysql.users.tablename + "' 创建失败！");
+		}
+	}
+	if(!authmeExist){
+		console.log("数据表 '" + config.mysql.authme.tablename + "' 不存在，正在创建中...");
+		let c = await sql.createTable(config.mysql.authme.tablename, sql_authme);
+		if(c){
+			console.log("数据表 '" + config.mysql.authme.tablename + "' 创建成功！");
+		} else {
+			console.log("数据表 '" + config.mysql.authme.tablename + "' 创建失败！");
+		}
+	}
 };
 
-exports.inputCheck = async (JSONdata, res) => { // 已用 Promise async/await 重构 2018-07-11
+exports.inputCheck = async (JSONdata, res) => { // input动态检查
 	let checkReturn = {
 		InputName: JSONdata.InputName,
 		CheckStatus: "false",
@@ -124,18 +144,26 @@ exports.verifyCheck = async (Aid, AppSecretKey, Ticket, Randstr, UserIP, Res, ca
 
 	}
 	let return_data = "";
-	try {
-		https.get(opt, (req) => {
+	let https_promise = new Promise((resolve, reject) => {
+		let getdata = https.get(opt, (req) => {
 			req.on("data", (res) => {
 				return_data += res;
 			});
 			req.on("end", (res) => {
-				callback("", JSON.parse(return_data));
+				resolve(return_data);
 			});
 		});
-	} catch(err){
-    	callback(err.message, "");
-	}
+		getdata.on("error", (req) => {
+			reject(req);
+		});
+	});
+	https_promise.then((onFulfilled, onRejected) => {
+		if(!onRejected){
+			callback("", JSON.parse(return_data));
+		} else {
+			callback(504, "");
+		}
+	});
 };
 
 exports.sendecode = async (JSONdata) => { // 发送邮箱验证码

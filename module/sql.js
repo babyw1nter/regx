@@ -15,23 +15,51 @@ var mysql_pool = mysql_.createPool({
 	dateStrings: true  // date转字符串
 });
 
-exports.tableExistThenCreateTable = async (tablename) => {
-	mysql_pool.getConnection((err, connection) => {
-		let sql = "SELECT * FROM `" + tablename + "`";
-		connection.query(sql, async (err, result) => {
-			if(err){
-				console.log("检测到数据表不存在, 正在创建中...");
-				let ct = await this.createTable(tablename);
-				if(ct) console.log("数据表创建完成!"); else console.log("数据表创建失败!");
-			}
+exports.tableExist = async (tablename) => { // 查询表是否存在
+	let status = false;
+	let sql = "SHOW TABLES LIKE '" + tablename + "';";
+	let query_table = new Promise((resolve, reject) => {
+		mysql_pool.getConnection((error, connection) => {
+			if (error) throw error;
+			connection.query(sql, (err, res) => {
+				if(err){
+					reject(err);
+				} else {
+					resolve(res);
+				}
+				connection.release();
+			});
 		});
 	});
+	await query_table.then((onFulfilled, onRejected) => {
+		if(onFulfilled.length !== 0){
+			status = true;
+		}
+	});
+	return status;
 }
 
-exports.createTable = async (tablename) => { // 建表，TUDO...
-	let sql_users = "CREATE TABLE `" + tablename + "` (`id` mediumint(8) unsigned NOT NULL, `username` varchar(255) NOT NULL, `realname` varchar(255) NOT NULL, `password` varchar(255) NOT NULL, `email` varchar(255) NOT NULL, `invite_code` varchar(255) DEFAULT NULL, `date` datetime NOT NULL, `ip` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`), KEY `username` (`username`)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
-	let sql_authme = "CREATE TABLE `" + tablename + "` (`id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT, `username` varchar(255) NOT NULL, `realname` varchar(255) NOT NULL, `password` varchar(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL, `ip` varchar(40) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL, `lastlogin` bigint(20) DEFAULT NULL, `x` double NOT NULL DEFAULT '0', `y` double NOT NULL DEFAULT '0', `z` double NOT NULL DEFAULT '0', `world` varchar(255) NOT NULL DEFAULT 'world', `regdate` bigint(20) NOT NULL DEFAULT '0', `regip` varchar(40) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL, `yaw` float DEFAULT NULL, `pitch` float DEFAULT NULL, `email` varchar(255) DEFAULT NULL, `isLogged` smallint(6) NOT NULL DEFAULT '0', `hasSession` smallint(6) NOT NULL DEFAULT '0', PRIMARY KEY (`id`), UNIQUE KEY `username` (`username`)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
-	return true;
+exports.createTable = async (tablename, sql) => { // 建表
+	let status = false;
+	let create_table = new Promise((resolve, reject) => {
+		mysql_pool.getConnection((error, connection) => {
+			if (error) throw error;
+			connection.query(sql, (err, res) => {
+				if(err){
+					reject(err);
+				} else {
+					resolve(res);
+				}
+				connection.release();
+			});
+		});
+	});
+	await create_table.then((onFulfilled, onRejected) => {
+		if(onFulfilled.length !== 0){
+			status = true;
+		}
+	});
+	return status;
 };
 
 exports.queryExist = async (key, val) => { // 查询是否已存在
@@ -209,8 +237,8 @@ exports.insertReg = async (JSONdata, ip) => { // 插入数据表
 			status[1] = false;
 		}
 	});
-	if(status.indexOf(false) != -1){
-		return false;
+	if(status.indexOf(false) == -1){
+		return true;
 	}
-	return true;
+	return false;
 }
