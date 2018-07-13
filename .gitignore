@@ -1,0 +1,5 @@
+.DS_Store
+*/.DS_Store
+/node_modules/*
+*/test.*
+/config/config.json
