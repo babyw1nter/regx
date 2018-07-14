@@ -12,7 +12,7 @@ const fs = require("fs");
 
 var config = require("../config/config.json");
 
-var regex = new Array();
+var regex = new Array;
 regex["id"] = [[[/^[^\s]+$/],["不能包含空格"]],[[/^.{5,16}$/],["长度为5-16个字符"]],[[/^[a-zA-Z][a-zA-Z0-9_]*$/],["必须以字母开头，只能输入数字、字母、下划线"]]];
 regex["pwd"] = [[[/^[^\s]+$/],["不能包含空格"]],[[/^.{6,16}$/],["长度为6-16个字符"]],[[/^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)]|[\(\)])+$)([^(0-9a-zA-Z)]|[\(\)]|[a-z]|[A-Z]|[0-9]){2,}$/
 ],["必须包含数字、字母、符号中至少2种"]]];
@@ -20,15 +20,15 @@ regex["e"] = [[[/^.{6,32}$/],["长度为6-32个字符"]],[[/^[a-zA-Z0-9_.-]+@[a-
 regex["ecode"] = [[[/^[^\s]+$/],["不能包含空格"]],[[/^.{6}$/],["长度为6个字符"]]];
 
 var InputNameReplace = {
-	"id": "username",
-	"e": "email"
+	"id": config.mysql.users.column.mySQLColumnName,
+	"e": config.mysql.users.column.mySQLColumnEmail
 };
 
-var __ecode = new Array();
+var __ecode = new Array; // 存放邮箱验证码的数组
 
 exports.tableCheck = async () => { // 检测数据表是否存在, 不存在则创建表
-	let sql_users = "CREATE TABLE `" + config.mysql.users.tablename + "` (`id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT, `username` varchar(255) NOT NULL, `realname` varchar(255) NOT NULL, `password` varchar(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL, `email` varchar(255) NOT NULL, `invite_code` varchar(255) DEFAULT NULL, `date` datetime NOT NULL, `ip` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`), KEY `username` (`username`)) ENGINE=InnoDB DEFAULT CHARSET=utf8",
-		sql_authme = "CREATE TABLE `" + config.mysql.authme.tablename + "` (`id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT, `username` varchar(255) NOT NULL, `realname` varchar(255) NOT NULL, `password` varchar(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL, `ip` varchar(40) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL, `lastlogin` bigint(20) DEFAULT NULL, `x` double NOT NULL DEFAULT '0', `y` double NOT NULL DEFAULT '0', `z` double NOT NULL DEFAULT '0', `world` varchar(255) NOT NULL DEFAULT 'world', `regdate` bigint(20) NOT NULL DEFAULT '0', `regip` varchar(40) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL, `yaw` float DEFAULT NULL, `pitch` float DEFAULT NULL, `email` varchar(255) DEFAULT NULL, `isLogged` smallint(6) NOT NULL DEFAULT '0', `hasSession` smallint(6) NOT NULL DEFAULT '0', PRIMARY KEY (`id`), UNIQUE KEY `username` (`username`)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+	let sql_users = "CREATE TABLE `" + config.mysql.users.tablename + "` (`" + config.mysql.users.column.mySQLColumnId + "` mediumint(8) unsigned NOT NULL AUTO_INCREMENT, `" + config.mysql.users.column.mySQLColumnName + "` varchar(255) NOT NULL, `" + config.mysql.users.column.mySQLRealName + "` varchar(255) NOT NULL, `" + config.mysql.users.column.mySQLColumnPassword + "` varchar(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL, `" + config.mysql.users.column.mySQLColumnEmail + "` varchar(255) NOT NULL, `" + config.mysql.users.column.mySQLColumnInviteCode + "` varchar(255) DEFAULT NULL, `" + config.mysql.users.column.mySQLColumnRegisterDate + "` datetime NOT NULL, `" + config.mysql.users.column.mySQLColumnRegisterIp + "` varchar(255) DEFAULT NULL, PRIMARY KEY (`" + config.mysql.users.column.mySQLColumnId + "`), KEY `" + config.mysql.users.column.mySQLColumnName + "` (`" + config.mysql.users.column.mySQLColumnName + "`)) ENGINE=InnoDB DEFAULT CHARSET=utf8",
+		sql_authme = "CREATE TABLE `" + config.mysql.authme.tablename + "` (`" + config.mysql.authme.column.mySQLColumnId + "` mediumint(8) unsigned NOT NULL AUTO_INCREMENT, `" + config.mysql.authme.column.mySQLColumnName + "` varchar(255) NOT NULL, `" + config.mysql.authme.column.mySQLRealName + "` varchar(255) NOT NULL, `" + config.mysql.authme.column.mySQLColumnPassword + "` varchar(255) CHARACTER SET ascii COLLATE ascii_bin NOT NULL, `" + config.mysql.authme.column.mySQLColumnRegisterIp + "` varchar(40) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL, `" + config.mysql.authme.column.mySQLColumnLastLogin + "` bigint(20) DEFAULT NULL, `" + config.mysql.authme.column.mySQLlastlocX + "` double NOT NULL DEFAULT '0', `" + config.mysql.authme.column.mySQLlastlocY + "` double NOT NULL DEFAULT '0', `" + config.mysql.authme.column.mySQLlastlocZ + "` double NOT NULL DEFAULT '0', `" + config.mysql.authme.column.mySQLlastlocWorld + "` varchar(255) NOT NULL DEFAULT 'world', `" + config.mysql.authme.column.mySQLColumnRegisterDate + "` bigint(20) NOT NULL DEFAULT '0', `" + config.mysql.authme.column.mySQLColumnRegisterIp + "` varchar(40) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL, `" + config.mysql.authme.column.mySQLlastlocYaw + "` float DEFAULT NULL, `" + config.mysql.authme.column.mySQLlastlocPitch + "` float DEFAULT NULL, `" + config.mysql.authme.column.mySQLColumnEmail + "` varchar(255) DEFAULT NULL, `" + config.mysql.authme.column.mySQLColumnLogged + "` smallint(6) NOT NULL DEFAULT '0', `" + config.mysql.authme.column.mySQLColumnHasSession + "` smallint(6) NOT NULL DEFAULT '0', PRIMARY KEY (`" + config.mysql.authme.column.mySQLColumnId + "`), UNIQUE KEY `" + config.mysql.authme.column.mySQLColumnName + "` (`" + config.mysql.authme.column.mySQLColumnName + "`)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
 	let usersExist = await sql.tableExist(config.mysql.users.tablename),
 		authmeExist = await sql.tableExist(config.mysql.authme.tablename);
 	if(!usersExist){
@@ -51,7 +51,33 @@ exports.tableCheck = async () => { // 检测数据表是否存在, 不存在则�
 	}
 };
 
-exports.inputCheck = async (JSONdata, res) => { // input动态检查
+exports.ipCheck = (ip) => { // IP段黑白名单检查，支持"*"通配符
+	let ipSplit = ip.split(".");
+	let ipStrArray = new Array;
+	if(config.system.reg.ip.mode == "blacklist"){
+		ipStrArray = config.system.reg.ip.blacklist;
+	} else if (config.system.reg.mode == "whitelist") {
+		ipStrArray = config.system.reg.ip.whitelist;
+	}
+	ipStrArray = ipStrArray.split(",");
+	if(ipStrArray.indexOf(ip) != -1) return true;
+	let ipSplitArray = new Array;
+	let status = [false, false, false, false];
+	for (let i = 0; i < ipStrArray.length; i++) {
+		let isa = ipStrArray[i].split(".");
+		for (let j = 0; j < isa.length; j++) {
+			if(ipSplit[j].replace(/\s/g,"") == isa[j].replace(/\s/g,"") || isa[j].replace(/\s/g,"") == "*"){
+				status[j] = true;
+			} else {
+				status[j] = false;
+			}
+		}
+		if(status.indexOf(false) == -1) return true;
+	}
+	return false;
+};
+
+exports.inputCheck = async (JSONdata, res) => { // input动态检查 待完成: 检测禁止昵称
 	let checkReturn = {
 		InputName: JSONdata.InputName,
 		CheckStatus: "false",
@@ -93,7 +119,7 @@ exports.inputCheck = async (JSONdata, res) => { // input动态检查
 	}
 };
 
-exports.regexCheck = (JSONdata) => { // 正则判断 待重构 TUDO...
+exports.regexCheck = (JSONdata) => { // 正则判断 待重构...
 	if(!regex[JSONdata.InputName]){ // 非法提交
 		return config.errMsg["default"];
 	}

@@ -97,8 +97,10 @@ exports.encrypt = (str, saltlen = 8, ea) => { // 处理加密算法
 			return encrypt_.SHA256(str);
 			break;
 		case "BASE64EN":
+			return encrypt_.BASE64EN(str);
 			break;
 		case "BASE64DE":
+			return encrypt_.BASE64DE(str);
 			break;
 		default:
 			return str;
@@ -114,17 +116,23 @@ class encrypt { // 加密算法类
 		return crypto.createHash("md5").update(str).digest("hex");
 	}
 	MD5VB(str){
-		// TUDO
+		// TUDO...
 	}
 	SALTED2MD5(str){
 		let salt = exports.getRandomStr(this.saltlen);
 		return "$SALTED2MD5$" + salt + "$" + crypto.createHash("md5").update(crypto.createHash("md5").update(str).digest("hex") + salt).digest("hex");
 	}
 	SALTEDSHA512(str){
-		// TUDO
+		// TUDO...
 	}
 	SHA256(str){
 		let salt = exports.getRandomStr(this.saltlen);
 		return "$SHA$" + salt + "$" + crypto.createHash("sha256").update(crypto.createHash("sha256").update(str).digest("hex") + salt).digest("hex");
+	}
+	BASE64EN(str){
+		return new Buffer(str).toString("base64");
+	}
+	BASE64DE(str){
+		return new Buffer(str, "base64").toString();
 	}
 };

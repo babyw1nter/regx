@@ -22,7 +22,9 @@ const api = require("./module/api.js");
 
 const test = require("./module/test.js"); test.test();
 
-check.tableCheck();
+(async function(){ // 启动时检测数据表是否存在
+	let check____ = await check.tableCheck();
+}());
 
 express.set("views", path.join(__dirname, "/static/html"));
 express.set("view engine", "ejs");
@@ -32,7 +34,11 @@ express.use("/", express_.static("static"));
 express.use(bodyParser.urlencoded({extended: false}));
 express.use(bodyParser.json());
 
-router.get("/", function(req, res){ // 渲染HTML页面
+router.get("/", (req, res) => { // 渲染HTML页面
+	if(!index.permission(req, res)){
+		res.sendStatus(403);
+		return;
+	}
 	res.type("html");
 	res.render("index",{
 		title: config.website.title,
@@ -43,11 +49,15 @@ router.get("/", function(req, res){ // 渲染HTML页面
 		h4_title: config.website.h4_title,
 		checkbox_ag: config.website.checkbox_ag,
 		footer: config.website.footer,
-		session_code: 123456
+		session_code: api.encrypt(api.getRandomNum(10000, 99999).toString(), 0, "BASE64EN")
 	});
 });
 
 router.get("/api/get", async (req, res) => { // 处理get请求
+	if(!index.permission(req, res)){
+		res.sendStatus(403);
+		return;
+	}
 	if(!req.query.mod || !req.query.data){ // 非法请求返回403
 		res.sendStatus(403);
 		return;
@@ -87,6 +97,10 @@ router.get("/api/get", async (req, res) => { // 处理get请求
 });
 
 express.post("/api/post", async (req, res) => { // post请求处理
+	if(!index.permission(req, res)){
+		res.sendStatus(403);
+		return;
+	}
 	if(!req.body.mod || !req.body.data){ // 非法请求返回403
 		res.sendStatus(403);
 		return;
@@ -98,7 +112,7 @@ express.post("/api/post", async (req, res) => { // post请求处理
 		return;
 	}
 	switch(mod){
-		case "reg":
+		case "reg": // 注册提交表单
 			check.verifyCheck(config.verify.reg.AppID, config.verify.reg.AppSecretKey, JSONdata.ticket, JSONdata.randstr, api.getReqIp(req), res, async (err, verify_data) => {
 				if(verify_data.response.toString() === "1"){
 					let regmsg = await reg.register(JSONdata, api.getReqIp(req));
