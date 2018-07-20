@@ -8,6 +8,8 @@
 
 此版本使用 __Node.js__ 驱动，当然，它还有另外一个使用 __PHP__ 驱动的版本 [点击跳转](https://github.com/sc0utz/regx/tree/regx-php)
 
+__正计划使用 authlib-injector 来实现外置登录，敬请期待...__
+
 ## 功能特性
 
 * 兼容 AuthMe Reloaded 5.4.0 (最新版本)
