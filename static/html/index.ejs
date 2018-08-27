@@ -62,7 +62,7 @@
 						</div>
 						<div id="ecode-div" data-check="false" data-button="true" style="display: inline-block; float: right; margin-left: 15px;">
 							<div class="input-icon"><i class="mdi mdi-checkbox-marked-circle-outline"></i></div>
-							<div class="input-button"><a id="sendecode" data-appid="2020964756" href="javascript:void(0);">获取验证码</a></div>
+							<div class="input-button"><a id="sendecode" data-appid="<%=appid_sendecode%>" href="javascript:void(0);">获取验证码</a></div>
 							<input name="ecode" type="text" placeholder="验证码" class="form-control ecode-input" maxlength="6">
 							<div id="ecode-error-tip" class="tip-title tip-error">
 								<span><i class="mdi mdi-alert-circle"></i><span></span></span>
@@ -70,7 +70,7 @@
 							<div id="ecode-tip" class="tip-title">
 							</div>
 						</div>
-						<button type="button" name="submit" data-appid="2014223378" class="btn btn-primary">立即注册</button>
+						<button type="button" name="submit" data-appid="<%=appid_reg%>" class="btn btn-primary">立即注册</button>
 						<h5><input id="ag" type="checkbox" checked="checked" class="checkbox-inline"><span>我已阅读并同意<a id="cont-agreement" href="javascript:void(0);" data-toggle="modal" data-target="#content-window"><%=checkbox_ag%></a></span></h5>
 					</form>
 				</div>

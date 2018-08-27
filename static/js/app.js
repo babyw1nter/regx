@@ -288,7 +288,7 @@ function switchPage(page){ // 页面切换控制
 }
 
 var bgcount = 1;
-(function switchBackground(){ //背景图轮播
+(function switchBackground(){ //背景图轮播, 可根据需要修改
 	let bgurl = [
 		"r.photo.store.qq.com/psb?/V145DJPI4LwgJ7/Q.F.w52N4KEkXz7cgw5sWmF8Pqj9jbM7BE*JntmxuRo!/r/dFUAAAAAAAAA",
 		"r.photo.store.qq.com/psb?/V145DJPI4LwgJ7/LRbplIvBj3mm*HSzdsAYMimeW68jEHyqI8ozeNTIe3w!/r/dGEBAAAAAAAA",
@@ -297,7 +297,7 @@ var bgcount = 1;
 		"r.photo.store.qq.com/psb?/V145DJPI4LwgJ7/sD0ymrpptW7NrXg8.nGAx3oUtU28Cat*aH89MoSRLIk!/r/dDEBAAAAAAAA",
 	];
 	setTimeout(function(){
-		$("#lb").css("background-image", "url(https://" + bgurl[bgcount] + ")");
+		$("#lb").css("background-image", "url(https://" + bgurl[bgcount] + ")"); // !注意: 若站点启用https,则此处不能修改,否则https标会提示"不安全"!!!
 		bgcount++;
 		if (bgcount >= 5){
 			bgcount = 0;
@@ -365,10 +365,14 @@ function ecodeCD(id){ // 倒计时函数
 	}
 }
 
-var verify_sendecode = new TencentCaptcha("2020964756", function(res){ // ajax发送邮箱验证码验证
-	// console.log(res);
-    // res（未通过验证）= {ret: 1, ticket: null}
-    // res（验证成功） = {ret: 0, ticket: "String", randstr: "String"}
+var appid_sendecode = $("a#sendecode").data("appid"), // 获取APPID
+	appid_reg = $("button[name=submit]").data("appid");
+
+if(!appid_sendecode || !appid_reg){ // 判断获取成功?
+	alert("AppID Error"); 
+}
+
+var verify_sendecode = new TencentCaptcha(appid_sendecode.toString(), function(res){ // ajax发送邮箱验证码验证
     if(res.ret === 0){
         $("input[name=ecode]").val(" ");
         $("input[name=ecode]").blur();
@@ -385,10 +389,7 @@ var verify_sendecode = new TencentCaptcha("2020964756", function(res){ // ajax�
     }
 }, { bizState: "sendecode" });
 
-var verify_submit = new TencentCaptcha("2014223378", function(res){ // ajax提交注册验证
-	//console.log(res);
-    // res（未通过验证）= {ret: 1, ticket: null}
-    // res（验证成功） = {ret: 0, ticket: "String", randstr: "String"}
+var verify_submit = new TencentCaptcha(appid_reg.toString(), function(res){ // ajax提交注册验证
     if(res.ret === 0){
 		let formData = {
 			id: $("input[name=id]").val(),
@@ -431,6 +432,7 @@ $(window).resize(function(){ // 左侧banner根据尺寸自动调整宽度 1000p
 	}
 	$("#rw").css("width", window_wh.width - $("#lb").width());
 });
+
 
 $(document).ready(function(){
 	$(window).resize();

@@ -49,6 +49,8 @@ router.get("/", (req, res) => { // 渲染HTML页面
 		h4_title: config.website.h4_title,
 		checkbox_ag: config.website.checkbox_ag,
 		footer: config.website.footer,
+		appid_sendecode: config.verify.sendecode.AppID,
+		appid_reg: config.verify.reg.AppID,
 		session_code: api.encrypt(api.getRandomNum(10000, 99999).toString(), 0, "BASE64EN")
 	});
 });

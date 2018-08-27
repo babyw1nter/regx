@@ -24,7 +24,7 @@ exports.register = async (JSONdata, ip) => { // 注册处理主入口
 		if(regstatus){ // 插入成功
 			msg.msg = "OK";
 			msg.status = "true";
-			console.log("新用户注册成功:", JSONdata.id, JSONdata.e, ip);
+			console.log("新用户注册成功:", JSONdata.id, JSONdata.e, ip, api.timestamp2Date(api.getTimeStamp()));
 		} else { // 插入失败
 			msg.msg = config.errMsg.reg.error;
 			msg.status = "false";
