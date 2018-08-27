@@ -101,7 +101,7 @@
 "email": {
 	"smtp": {
 		"host": "smtp.exmail.qq.com",
-		"port": 443,
+		"port": 465,
 		"sercure": true,
 		"username": "10000@qq.com",
 		"password": "123456",

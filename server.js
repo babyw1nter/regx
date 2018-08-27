@@ -12,6 +12,7 @@ const path = require("path");
 const ejs = require("ejs");
 const fs = require("fs");
 const bodyParser = require("body-parser");
+
 var config = require("./config/config.json");
 
 const index = require("./module/index.js");
@@ -19,8 +20,6 @@ const sql = require("./module/sql.js");
 const check = require("./module/check.js");
 const reg = require("./module/reg.js");
 const api = require("./module/api.js");
-
-const test = require("./module/test.js"); test.test();
 
 (async function(){ // 启动时检测数据表是否存在
 	let check____ = await check.tableCheck();
