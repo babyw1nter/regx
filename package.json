@@ -4,34 +4,34 @@
   "description": "A web registration system, Powered by Node.js",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sc0utz/regx.git"
+    "url": "git+https://github.com/hhui64/regx.git"
   },
   "keywords": [
     "regx"
   ],
-  "author": "sc0utz",
+  "author": "hhui64",
   "license": "AGPL-3.0-only",
   "bugs": {
-    "url": "https://github.com/sc0utz/regx/issues"
+    "url": "https://github.com/hhui64/regx/issues"
   },
-  "homepage": "https://github.com/sc0utz/regx#readme",
+  "homepage": "https://github.com/hhui64/regx#readme",
   "dependencies": {
-    "async": "^2.6.1",
-    "body-parser": "^1.18.3",
-    "config": "^1.30.0",
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "config": "^3.3.1",
     "crypto": "^1.0.1",
-    "ejs": "^2.6.1",
-    "express": "^4.16.3",
-    "express-session": "^1.15.6",
-    "mysql": "^2.15.0",
-    "node-schedule": "^1.3.0",
+    "ejs": "^3.0.2",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "mysql": "^2.18.1",
+    "node-schedule": "^1.3.2",
     "nodemailer": "^6.4.6",
     "path": "^0.12.7",
-    "promise": "^8.0.1",
     "querystring": "^0.2.0"
   }
 }
