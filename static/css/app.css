@@ -155,10 +155,6 @@ a {
 	width: 450px;
 }
 
-.from {
-
-}
-
 .center-box > form > div {
 	position: relative;
 	margin-top: 10px;
@@ -227,7 +223,7 @@ a.disabled, .disabled {
 	padding: .375rem 1rem;
 	width: 100%;
 	line-height: 2em;
-	font-size: 1.21em;
+	font-size: 19px;
 }
 
 .center-box > form > button {

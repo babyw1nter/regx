@@ -15,25 +15,25 @@ var regex = new Array()
 regex['id'] = [
   [[/^[^\s]+$/], ['不能包含空格']],
   [[/^.{5,16}$/], ['长度为5-16个字符']],
-  [[/^[a-zA-Z][a-zA-Z0-9_]*$/], ['必须以字母开头，只能输入数字、字母、下划线']]
+  [[/^[a-zA-Z][a-zA-Z0-9_]*$/], ['必须以字母开头，只能输入数字、字母、下划线']],
 ]
 regex['pwd'] = [
   [[/^[^\s]+$/], ['不能包含空格']],
   [[/^.{6,16}$/], ['长度为6-16个字符']],
-  [[/^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)]|[\(\)])+$)([^(0-9a-zA-Z)]|[\(\)]|[a-z]|[A-Z]|[0-9]){2,}$/], ['必须包含数字、字母、符号中至少2种']]
+  [[/^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)]|[\(\)])+$)([^(0-9a-zA-Z)]|[\(\)]|[a-z]|[A-Z]|[0-9]){2,}$/], ['必须包含数字、字母、符号中至少2种']],
 ]
 ;(regex['e'] = [
   [[/^.{6,32}$/], ['长度为6-32个字符']],
-  [[/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/], ['请输入正确的邮箱格式']]
+  [[/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/], ['请输入正确的邮箱格式']],
 ]),
   (regex['ecode'] = [
     [[/^[^\s]+$/], ['不能包含空格']],
-    [[/^.{6}$/], ['长度为6个字符']]
+    [[/^.{6}$/], ['长度为6个字符']],
   ])
 
 var InputNameReplace = {
   id: config.mysql.users.column.mySQLColumnName,
-  e: config.mysql.users.column.mySQLColumnEmail
+  e: config.mysql.users.column.mySQLColumnEmail,
 }
 
 var __ecode = new Array() // 存放邮箱验证码的数组
@@ -132,7 +132,7 @@ exports.tableCheck = async () => {
   }
 }
 
-exports.ipCheck = ip => {
+exports.ipCheck = (ip) => {
   // IP段黑白名单检查，支持"*"通配符
   let ipSplit = ip.split('.')
   let ipStrArray = new Array()
@@ -164,7 +164,7 @@ exports.inputCheck = async (JSONdata, res) => {
   let checkReturn = {
     InputName: JSONdata.InputName,
     CheckStatus: 'false',
-    Message: 'null'
+    Message: 'null',
   }
   let InputName = JSONdata.InputName
   let InputVal = JSONdata.InputVal.toLowerCase() // 转小写判断
@@ -205,7 +205,7 @@ exports.inputCheck = async (JSONdata, res) => {
   }
 }
 
-exports.regexCheck = JSONdata => {
+exports.regexCheck = (JSONdata) => {
   // 正则判断 待重构...
   if (!regex[JSONdata.InputName]) {
     // 非法提交
@@ -255,24 +255,24 @@ exports.verifyCheck = async (Aid, AppSecretKey, Ticket, Randstr, UserIP, Res, ca
     AppSecretKey: AppSecretKey,
     Ticket: Ticket,
     Randstr: Randstr,
-    UserIP: UserIP
+    UserIP: UserIP,
   }
   let opt = {
     hostname: 'ssl.captcha.qq.com',
     port: 443,
-    path: '/ticket/verify?' + querystring.stringify(data)
+    path: '/ticket/verify?' + querystring.stringify(data),
   }
   let return_data = ''
   let https_promise = new Promise((resolve, reject) => {
-    let getdata = https.get(opt, req => {
-      req.on('data', res => {
+    let getdata = https.get(opt, (req) => {
+      req.on('data', (res) => {
         return_data += res
       })
-      req.on('end', res => {
+      req.on('end', (res) => {
         resolve(return_data)
       })
     })
-    getdata.on('error', req => {
+    getdata.on('error', (req) => {
       reject(req)
     })
   })
@@ -285,7 +285,7 @@ exports.verifyCheck = async (Aid, AppSecretKey, Ticket, Randstr, UserIP, Res, ca
   })
 }
 
-exports.sendecode = async JSONdata => {
+exports.sendecode = async (JSONdata) => {
   // 发送邮箱验证码
   let ecode = this.ecodeAdd(JSONdata.e)
   let time = api.timestamp2Date(api.getTimeStamp())
@@ -295,8 +295,8 @@ exports.sendecode = async JSONdata => {
     sercure: config.email.smtp.sercure,
     auth: {
       user: config.email.smtp.username,
-      pass: config.email.smtp.password
-    }
+      pass: config.email.smtp.password,
+    },
   })
 
   let email_html = fs
@@ -313,13 +313,13 @@ exports.sendecode = async JSONdata => {
     to: JSONdata.e,
     subject: config.email.smtp.title,
     text: '',
-    html: email_html
+    html: email_html,
   })
 
   return info && info.rejected.length == 0
 }
 
-exports.ecodeAdd = email => {
+exports.ecodeAdd = (email) => {
   // 添加验证码到容器
   let ecode = api.getRandomNum(100000, 999999)
   let deadline = api.getTimeStamp() + parseInt(config.email.ecode.timeout) * 1000
@@ -336,7 +336,7 @@ exports.ecodeQuery = (email, ecode) => {
   }
   return false
 }
-;(function() {
+;(function () {
   // 匿名自执行函数，每分钟的0秒检测过期的验证码并从数组中剔除
   let job = schedule.scheduleJob('0 * * * * *', () => {
     let nowTime = api.getTimeStamp()

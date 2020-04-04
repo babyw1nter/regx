@@ -14,7 +14,7 @@ exports.register = async (JSONdata, ip) => {
     msg: 'null',
     id: JSONdata.id,
     e: JSONdata.e,
-    ecode: JSONdata.ecode
+    ecode: JSONdata.ecode,
   }
   let checkstatus = await check.regCheck(JSONdata, ip) // 正则×验证码×是否重复×间隔时间 四重验证
   if (checkstatus !== true) {

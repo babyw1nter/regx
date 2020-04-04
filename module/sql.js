@@ -1,6 +1,5 @@
 'use strict'
 const mysql_ = require('mysql')
-const promise = require('promise')
 const api = require('./api.js')
 
 var config = require('../config/config.json')
