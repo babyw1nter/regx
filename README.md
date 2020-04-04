@@ -1,4 +1,4 @@
-# regx-node ![node](https://img.shields.io/badge/node-%3E%3D6.14.3-blue.svg) ![mysql](https://img.shields.io/badge/MySQL-%3E%3D5.4-blue.svg) [![license](https://img.shields.io/badge/license-AGPL--3.0-brightgreen.svg)](https://github.com/sc0utz/regx/blob/regx-node/LICENSE)
+# regx-node [![license](https://img.shields.io/badge/license-AGPL--3.0-brightgreen.svg)](https://github.com/sc0utz/regx/blob/regx-node/LICENSE)
 
 使用 Node.js 驱动的全新 Minecraft 网页注册系统，当然，它一般用来配合 AuthMe-Reloaded 插件使用
 
@@ -6,28 +6,26 @@
 
 此项目为 [Authme-reger](https://github.com/sc0utz/Authme-Reger) 的重写版，新版本重写了整个前端模板，同时使用 Node.js 重写了后端，修复了一些历史遗留问题
 
-此版本使用 __Node.js__ 驱动，当然，它还有另外一个使用 __PHP__ 驱动的版本 [点击跳转](https://github.com/sc0utz/regx/tree/regx-php)
+## 警告信息
 
-__正计划使用 authlib-injector 来实现外置登录，敬请期待...__
+__本项目年代久远，期间衍生出 authlib-injector 等外置登录技术，无论在安全性、易用性上都比本项目要好得多，因此我不再推荐各位使用本项目。__
+
+请您在使用本项目之前思考以下几点问题：
+- 我是否只需要一个简单的注册页面？
+- 我的登录系统是否为 Authme 且不考虑更换？
+
+如果您最终的回答都为“是”，那么您可以使用本项目，否则我依然推荐您去使用 BlessingSkin。
 
 ## 功能特性
 
 * 兼容 AuthMe Reloaded 5.4.0 (最新版本)
-
 * 实时检测用户输入的内容并提交后端验证
-
 * 腾讯点击式防灌水验证码
-
 * 发送邮件验证码验证邮箱
-
 * 注册昵称白名单/黑名单
-
 * 注册邮箱白名单/黑名单
-
 * 注册IP归属地白名单/黑名单
-
 * 相同IP间隔N分钟后才能注册
-
 * 支持 Authme 插件常用的加密算法
 
 ## 如何启动
