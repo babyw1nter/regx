@@ -1,8 +1,8 @@
 /*
  * @name: server.js
- * @author: sc0utz
+ * @author: hhui64
  * @description: gloab control module
- * @version: 0.0.1-dev
+ * @version: 0.0.1
  */
 'use strict'
 const express_ = require('express')
