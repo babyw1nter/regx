@@ -1,12 +1,10 @@
 'use strict'
 const crypto = require('crypto')
 const https = require('https')
-const http = require('http')
-const promise = require('promise')
 
 var config = require('../config/config.json')
 
-exports.getReqIp = req => {
+exports.getReqIp = (req) => {
   // 取客户端IP地址
   let ip = req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.socket.remoteAddress || ''
   if (ip.split(',').length > 0) {
@@ -43,13 +41,13 @@ exports.getRandomStr = (len, ci = false) => {
   return str
 }
 
-exports.getTimeStamp = date => {
+exports.getTimeStamp = (date) => {
   // 取13位时间戳
   if (date) return new Date(date).getTime()
   else return new Date().getTime()
 }
 
-exports.timestamp2Date = timestamp => {
+exports.timestamp2Date = (timestamp) => {
   // 时间戳转日期 yyyy-mm-dd hh:mm:ss
   let Date_ = new Date(timestamp)
   let Y = Date_.getFullYear()
@@ -71,15 +69,15 @@ exports.get = async (hostname, path, port) => {
   let opt = {
     hostname: hostname,
     port: port,
-    path: path + '?' + querystring.stringify(data)
+    path: path + '?' + querystring.stringify(data),
   }
   let return_data = ''
   let gets = new Promise((resolve, reject) => {
-    https.get(opt, req => {
-      req.on('data', res => {
+    https.get(opt, (req) => {
+      req.on('data', (res) => {
         return_data += res
       })
-      req.on('end', res => {
+      req.on('end', (res) => {
         resolve(return_data) // JSON.parse()
       })
     })
@@ -128,10 +126,7 @@ class encrypt {
     this.saltlen = saltlen * 2
   }
   MD5(str) {
-    return crypto
-      .createHash('md5')
-      .update(str)
-      .digest('hex')
+    return crypto.createHash('md5').update(str).digest('hex')
   }
   MD5VB(str) {
     // TUDO...
@@ -144,12 +139,7 @@ class encrypt {
       '$' +
       crypto
         .createHash('md5')
-        .update(
-          crypto
-            .createHash('md5')
-            .update(str)
-            .digest('hex') + salt
-        )
+        .update(crypto.createHash('md5').update(str).digest('hex') + salt)
         .digest('hex')
     )
   }
@@ -164,19 +154,14 @@ class encrypt {
       '$' +
       crypto
         .createHash('sha256')
-        .update(
-          crypto
-            .createHash('sha256')
-            .update(str)
-            .digest('hex') + salt
-        )
+        .update(crypto.createHash('sha256').update(str).digest('hex') + salt)
         .digest('hex')
     )
   }
   BASE64EN(str) {
-    return new Buffer(str).toString('base64')
+    return Buffer.from(str).toString('base64')
   }
   BASE64DE(str) {
-    return new Buffer(str, 'base64').toString()
+    return Buffer.from(str, 'base64').toString()
   }
 }
