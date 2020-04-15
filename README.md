@@ -14,7 +14,7 @@ __本项目年代久远，期间衍生出 authlib-injector 等外置登录技术
 - 我是否只需要一个简单的注册页面？
 - 我的登录系统是否为 Authme 且不考虑更换？
 
-如果您最终的回答都为“是”，那么您可以使用本项目，否则我依然推荐您去使用 BlessingSkin。
+如果您最终的回答都为“是”，那么您可以使用本项目，否则我依然推荐您去使用基于 authlib-injector 的验证系统（如：BlessingSkin）。
 
 ## 功能特性
 
@@ -42,39 +42,35 @@ __本项目年代久远，期间衍生出 authlib-injector 等外置登录技术
 
 正在书写...
 
-## API接口
-
-正在书写...
-
 ## 反向代理
-
-### Apache 反向代理
-
-正在书写...
 
 ### Nginx 反向代理 (推荐)
 
-在 `nginx.conf` 添加以下代码
+在 `nginx.conf` 的 `http` 中添加一个 `server` 节点，示例如下：
 
 ```
-server {
-    listen        80;
-    server_name   www.yoursite.com;
+http {
+  # regx 反向代理节点
+  server {
+      listen        80;
+      server_name   www.yoursite.com;
 
-    location / {
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header Host  $http_host;
-        proxy_set_header X-Nginx-Proxy true;
-        proxy_set_header Connection "";
-        proxy_pass http://127.0.0.1:1234;
-        proxy_intercept_errors on;
-    }
-    error_page   404  /404.html;
-    error_page   500 502 503 504  /50x.html;
-    location = /50x.html {
-        root   html;
-    }
+      location / {
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header Host  $http_host;
+          proxy_set_header X-Nginx-Proxy true;
+          proxy_set_header Connection "";
+          proxy_pass http://127.0.0.1:1234;
+          proxy_intercept_errors on;
+      }
+      error_page   404  /404.html;
+      error_page   500 502 503 504  /50x.html;
+      location = /50x.html {
+          root   html;
+      }
+  }
+  # 其它 server 节点...
 }
 ```
 
