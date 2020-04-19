@@ -3,3 +3,4 @@
 /node_modules/*
 */test.*
 /config/config.json
+config/config.json

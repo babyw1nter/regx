@@ -64,8 +64,8 @@ exports.timestamp2Date = (timestamp) => {
   return Y + '-' + M + '-' + D + ' ' + H + ':' + Mi + ':' + S
 }
 
+// get请求 https 尚未完成
 exports.get = async (hostname, path, port) => {
-  // get请求 https 尚未完成
   let opt = {
     hostname: hostname,
     port: port,
@@ -95,28 +95,22 @@ exports.encrypt = (str, saltlen = 8, ea) => {
   switch (ea) {
     case 'MD5':
       return encrypt_.MD5(str)
-      break
     case 'MD5VB':
       return encrypt_.MD5VB(str)
-      break
     case 'SALTED2MD5':
       return encrypt_.SALTED2MD5(str)
-      break
     case 'SALTEDSHA512':
       return encrypt_.SALTEDSHA512(str)
-      break
     case 'SHA256':
       return encrypt_.SHA256(str)
-      break
+    case 'BCrypt':
+      return ''
     case 'BASE64EN':
       return encrypt_.BASE64EN(str)
-      break
     case 'BASE64DE':
       return encrypt_.BASE64DE(str)
-      break
     default:
       return str
-      break
   }
 }
 
@@ -157,6 +151,9 @@ class encrypt {
         .update(crypto.createHash('sha256').update(str).digest('hex') + salt)
         .digest('hex')
     )
+  }
+  BCrypt(str) {
+    
   }
   BASE64EN(str) {
     return Buffer.from(str).toString('base64')
