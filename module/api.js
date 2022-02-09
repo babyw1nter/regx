@@ -114,6 +114,9 @@ exports.encrypt = (str, saltlen = 8, ea) => {
     case 'BASE64DE':
       return encrypt_.BASE64DE(str)
       break
+    case 'BCRYPT':
+      return encrypt_.BCRYPT(str)
+      break
     default:
       return str
       break
@@ -164,4 +167,13 @@ class encrypt {
   BASE64DE(str) {
     return Buffer.from(str, 'base64').toString()
   }
+  /**
+   * 在1.12.2 CatServer-50610c7-universal
+   * AuthMe-5.4.0 中测试通过
+   * 要加密的字符串，长度 AuthMe默认为10
+   * 
+   */
+     BCRYPT(str){
+      return bcrypt.hashSync(str, 10)
+    }
 }
